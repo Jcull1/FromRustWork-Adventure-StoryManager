@@ -1,0 +1,9 @@
+[Server]
+    void TriggerVictory()
+    {
+        //Unlocking Modes for all players 
+        foreach (Player player in sessionPlayers)
+        {
+            FindObjectOfType<ModeManager>().UnlockStory(player, zone);
+        }
+    }
