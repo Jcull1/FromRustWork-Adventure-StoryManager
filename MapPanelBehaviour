@@ -1,0 +1,62 @@
+public static bool UnlockStoryButton;
+public static bool UnlockAdventureButton;
+
+[SerializeField]
+Dictionary<Zone, Dictionary<ModeManager.Mode, bool>> ZoneDictionary;
+[SerializeField]
+Dictionary<ModeManager.Mode, bool> ModeDictionary;
+    
+private void OnEnable()
+{
+  FindObjectOfType<DynamoDBClientBehaviour>().GetUserEntryAndCall(ModeUnlockCallback);
+}
+
+public void ActivateButtons(Zone zone)
+{
+  UnlockStoryButton = ZoneDictionary[zone][ModeManager.Mode.Story];
+  UnlockAdventureButton = ZoneDictionary[zone][ModeManager.Mode.Adventure];
+}
+
+//Mode Unlock Callback
+void ModeUnlockCallback(Document document, params object[] parameters)
+{
+  ZoneDictionary = new Dictionary<Zone, Dictionary<ModeManager.Mode, bool>>();
+
+  foreach (ZoneButtonBehaviour zoneButton in zoneButtons)
+        {
+            if (!document.ContainsKey(zoneButton.Zone.name))
+            {
+                ModeDictionary = new Dictionary<ModeManager.Mode, bool>();
+                ModeDictionary.Add(ModeManager.Mode.Story, false);
+                ModeDictionary.Add(ModeManager.Mode.Adventure, false);
+                ZoneDictionary.Add(zoneButton.Zone, ModeDictionary);
+            }
+            else
+            {
+                var ZoneDocument = document[zoneButton.Zone.name].AsDocument();
+
+                ModeDictionary = new Dictionary<ModeManager.Mode, bool>();
+
+                bool Story = ZoneDocument["Story"].AsBoolean();
+                bool Adventure = ZoneDocument["Adventure"].AsBoolean();
+
+                ModeDictionary.Add(ModeManager.Mode.Story, Story);
+                ModeDictionary.Add(ModeManager.Mode.Adventure, Adventure);
+
+                ZoneDictionary.Add(zoneButton.Zone, ModeDictionary);
+            }
+        }
+
+        foreach (KeyValuePair<Zone, Dictionary<ModeManager.Mode, bool>> entry in ZoneDictionary)
+        {
+            foreach (KeyValuePair<ModeManager.Mode, bool> entryValue in entry.Value)
+            {
+                var correctButton = zoneButtons.First(b => b.Zone.name == entry.Key.name);
+                if (correctButton != null && entryValue.Key == ModeManager.Mode.Story && entryValue.Value){
+                    correctButton.UnlockButton();
+                }
+            }
+        }
+        ActivateButtons(CurrentZone);
+    }
+
