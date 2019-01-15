@@ -1,0 +1,5 @@
+public void UnlockStory(Player player, Zone zone)
+    {
+        FindObjectOfType<DynamoDBServerBehaviour>().UnlockMode(player, zone.name, Mode.Adventure.ToString());
+        FindObjectOfType<DynamoDBServerBehaviour>().UnlockMode(player, zone.nextZone, Mode.Story.ToString());
+    }
