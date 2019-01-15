@@ -1,0 +1,8 @@
+public void UnlockMode(Player player, string zone, string mode)
+    {
+        var sub = player.Sub;
+        Debug.Log("Unlock " + mode + " mode for " + zone + " for Player!");
+        var request = GenerateUpdateModeRequest(sub, zone, mode);
+        PlaceUpdateRequest(request);
+    }
+    
