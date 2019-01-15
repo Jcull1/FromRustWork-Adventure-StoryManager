@@ -1,0 +1,63 @@
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
+
+public class MapMenuCreateGameButtonBehaviour : MonoBehaviour
+{
+
+    [SerializeField]
+    bool isStoryButton;
+
+    [SerializeField]
+    bool isAdventureButton;
+
+    [SerializeField]
+    Button button;
+
+    [SerializeField]
+    InputField inputField;
+
+    [SerializeField]
+    MapPanelBehaviour mapPanelBehaviour;
+
+    public void OnClickStory()
+    {
+        if (!string.IsNullOrEmpty(inputField.text))
+        {
+            mapPanelBehaviour.SetMainMenuZone();
+            if (mapPanelBehaviour.lobbyMainMenu.playAndHost)
+            {
+                mapPanelBehaviour.lobbyMainMenu.OnClickHost(inputField.text, mapPanelBehaviour.CurrentZone, ModeManager.Mode.Story);
+            }
+            else
+            {
+                mapPanelBehaviour.lobbyMainMenu.OnClickCreateGameLiftSession(inputField.text, mapPanelBehaviour.CurrentZone, ModeManager.Mode.Story);
+            }
+        }
+    }
+
+    public void OnClickAdventure()
+    {
+        if (!string.IsNullOrEmpty(inputField.text))
+        {
+            mapPanelBehaviour.SetMainMenuZone();
+            if (mapPanelBehaviour.lobbyMainMenu.playAndHost)
+            {
+                mapPanelBehaviour.lobbyMainMenu.OnClickHost(inputField.text, mapPanelBehaviour.CurrentZone, ModeManager.Mode.Adventure);
+            }
+            else
+            {
+                mapPanelBehaviour.lobbyMainMenu.OnClickCreateGameLiftSession(inputField.text, mapPanelBehaviour.CurrentZone, ModeManager.Mode.Adventure);
+            }
+        }
+    }
+
+    private void Update()
+    {
+        //Story
+        if ((isStoryButton && MapPanelBehaviour.UnlockStoryButton) || (isAdventureButton && MapPanelBehaviour.UnlockAdventureButton))
+        {
+            button.interactable = (string.IsNullOrEmpty(inputField.text)) ? false : true;
+        }
+    }
+}
